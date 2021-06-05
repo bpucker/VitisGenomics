@@ -1,6 +1,6 @@
 ### Boas Pucker ###
 ### bpucker@cebitec.uni-bielefeld.de ###
-### v0.3 ###
+### v0.31 ###
 
 __usage__ = """
 					python contigs2pseudochromosomes.py
@@ -277,7 +277,7 @@ def construct_agp_and_fasta( haplo, agp, fasta, prefix, contigs, gap_len ):
 																				"-"
 																				] ) ) + '\n' )
 					start_pos += contig['contig_len']+1
-				seq_out.write( '>' + key + '\n' + "".join( seq ) + '\n' )
+				seq_out.write( '>' + key + '\n' + ("N"*gap_len).join( seq ) + '\n' )	#N gap bug fixed in v0.31
 
 
 def main( arguments ):
