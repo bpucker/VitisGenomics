@@ -1,6 +1,7 @@
-### Boas Pucker ###
+### Boas Pucker & Jens Theine ###
+### jens.theine@uni-bielefeld.de ###
 ### bpucker@cebitec.uni-bielefeld.de ###
-### v0.31 ###
+### v0.32 ###
 
 __usage__ = """
 					python contigs2pseudochromosomes.py
@@ -134,7 +135,6 @@ def load_seq_lengths( fasta_file ):
 
 def get_pos_per_contig( best_hit_lines, contig_lens, chr_lens ):
 	"""! @brief get position of each contig on reference """
-	
 	contig_positions = []
 	best_hits = []
 	for line in best_hit_lines.values():
@@ -239,11 +239,13 @@ def construct_agp_and_fasta( haplo, agp, fasta, prefix, contigs, gap_len ):
 				sorted_contigs = sorted( haplo[ key ], key=itemgetter( 'start' ) )
 				seq = []
 				start_pos = 1
+
 				for idx, contig in enumerate( sorted_contigs ):
+
 					if idx > 0:	#add spacer/gap line
 						agp_out.write( "\t".join( map( str, [ prefix+key,
 																				start_pos,
-																				start_pos+contig['contig_len'],
+																				start_pos+gap_len - 1,				#coords shift bug fixed in v0.32
 																				(2*idx),
 																				"N",
 																				gap_len,
@@ -251,12 +253,13 @@ def construct_agp_and_fasta( haplo, agp, fasta, prefix, contigs, gap_len ):
 																				"yes",
 																				"reference-based"
 																				] ) ) + '\n' )
-						start_pos += gap_len+1
+						start_pos += gap_len																		#coords shift bug fixed in v0.32
+
 					if not contig['orientation']:
 						seq.append( revcomp( contigs[ contig['ID'] ] ) )
 						agp_out.write( "\t".join( map( str, [ prefix+key,
 																				start_pos,
-																				start_pos+contig['contig_len'],
+																				start_pos+contig['contig_len'] - 1,	#coords shift bug fixed in v0.32
 																				(2*idx)+1,
 																				"W",
 																				contig['ID'],
@@ -268,7 +271,7 @@ def construct_agp_and_fasta( haplo, agp, fasta, prefix, contigs, gap_len ):
 						seq.append( contigs[ contig['ID'] ] )
 						agp_out.write( "\t".join( map( str, [ prefix+key,
 																				start_pos,
-																				start_pos+contig['contig_len'],
+																				start_pos+contig['contig_len'] - 1,	#coords shift bug fixed in v0.32
 																				(2*idx)+1,
 																				"W",
 																				contig['ID'],
@@ -276,8 +279,9 @@ def construct_agp_and_fasta( haplo, agp, fasta, prefix, contigs, gap_len ):
 																				contig['contig_len'],
 																				"-"
 																				] ) ) + '\n' )
-					start_pos += contig['contig_len']+1
-				seq_out.write( '>' + key + '\n' + ("N"*gap_len).join( seq ) + '\n' )	#N gap bug fixed in v0.31
+					start_pos += contig['contig_len']																#coords shift bug fixed in v0.32
+					
+				seq_out.write( '>' + key + '\n' + ("N"*gap_len).join( seq ) + '\n' )								#N gap bug fixed in v0.31
 
 
 def main( arguments ):
